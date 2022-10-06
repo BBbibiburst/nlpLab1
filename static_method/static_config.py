@@ -4,3 +4,4 @@ Unigram_Dict = r'../results/unigram_dict.txt'
 seg_Unigram = r'../results/seg_Unigram.txt'
 Bigram_Dict = r'../results/bigram_dict.txt'
 seg_Bigram = r'../results/seg_Bigram.txt'
+include_seperated_words = False

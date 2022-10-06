@@ -1,8 +1,7 @@
 # coding=gbk
-from physicial_method.phy_config import seg_FMM,seg_BMM,TrainingDataFile
-from static_method.static_config import seg_Unigram
+from physicial_method.phy_config import seg_FMM, seg_BMM, TrainingDataFile
+from static_method.static_config import seg_Unigram, seg_Bigram
 import re
-
 
 
 def getText(answer_line):
@@ -80,10 +79,12 @@ def getTotalScore(AnswerName, ResultName):
 
 
 print("正在计算...")
-#score1 = getTotalScore(TrainingDataFile[3:], seg_FMM[3:])
-#score2 = getTotalScore(TrainingDataFile[3:], seg_BMM[3:])
+score1 = getTotalScore(TrainingDataFile[3:], seg_FMM[3:])
+score2 = getTotalScore(TrainingDataFile[3:], seg_BMM[3:])
 score3 = getTotalScore(TrainingDataFile[3:], seg_Unigram[3:])
+score4 = getTotalScore(TrainingDataFile[3:], seg_Bigram[3:])
 print("计算完成")
-#print('FMM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score1[0],score1[1],score1[2]))
-#print('BMM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score2[0],score2[1],score2[2]))
+print('FMM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score1[0],score1[1],score1[2]))
+print('BMM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score2[0],score2[1],score2[2]))
 print('Unigram:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score3[0],score3[1],score3[2]))
+print('Bigram:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score4[0], score4[1], score4[2]))

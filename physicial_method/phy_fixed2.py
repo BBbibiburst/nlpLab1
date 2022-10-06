@@ -3,7 +3,7 @@ import time
 
 from physicial_method.phy_config import *
 from classes.Sentence_Network_Graph import SentenceNetworkGraph
-from classes.Trie_Tree import HashTable
+from physicial_method.Trie_Tree import HashTable
 
 
 # 获取词典
