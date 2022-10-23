@@ -1,0 +1,3 @@
+´¿Trie_Tree:   19924.93s
+Trie_Tree+Hash_Table:   442.67s
+´¿Hash_Table:   157.80s

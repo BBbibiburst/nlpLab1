@@ -1,6 +1,7 @@
 # coding=gbk
 from physicial_method.phy_config import seg_FMM, seg_BMM, TrainingDataFile
-from static_method.static_config import seg_Unigram, seg_Bigram
+from status_method.status_config import seg_Unigram, seg_Bigram
+from HMM.HMM_config import seg_HMM
 import re
 
 
@@ -25,16 +26,17 @@ def getWord(word):
 
 def getInterval_answer(line, text):
     interval = []
-    line_split = re.findall(r'\[[^\[\]]*\]\S*|[^\[\]\s]*/\S*', line)
+    line_split = re.findall(r'[^\[\[\s]*/[^\[\]\s]*',line)
+    #line_split = re.findall(r'\[[^\[\]]*\]\S*|[^\[\]\s]*/\S*', line)
     pos = 0
     for word in line_split:
-        if word[0] == '[':
-            word_split = re.findall(r'[^\[\s]*/[^/\s\]]*', word)
-            word = ''
-            for c in word_split:
-                word += getWord(c)
-        else:
-            word = getWord(word)
+        # if word[0] == '[':
+        #     word_split = re.findall(r'[^\[\s]*/[^/\s\]]*', word)
+        #     word = ''
+        #     for c in word_split:
+        #         word += getWord(c)
+        # else:
+        word = getWord(word)
         interval.append((pos, pos + len(word) - 1))
         pos += len(word)
     return interval
@@ -83,8 +85,15 @@ score1 = getTotalScore(TrainingDataFile[3:], seg_FMM[3:])
 score2 = getTotalScore(TrainingDataFile[3:], seg_BMM[3:])
 score3 = getTotalScore(TrainingDataFile[3:], seg_Unigram[3:])
 score4 = getTotalScore(TrainingDataFile[3:], seg_Bigram[3:])
+score5 = getTotalScore(TrainingDataFile[3:], seg_HMM[3:])
 print("计算完成")
 print('FMM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score1[0],score1[1],score1[2]))
 print('BMM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score2[0],score2[1],score2[2]))
 print('Unigram:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score3[0],score3[1],score3[2]))
 print('Bigram:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score4[0], score4[1], score4[2]))
+print('HMM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score5[0], score5[1], score5[2]))
+with open(r'results/score.txt','w',encoding='gbk') as f:
+    f.write('FMM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score1[0],score1[1],score1[2]))
+    f.write('\n')
+    f.write('BMM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score2[0],score2[1],score2[2]))
+    f.write('\n')

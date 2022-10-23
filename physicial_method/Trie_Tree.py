@@ -15,56 +15,56 @@ def ELFhash(strings):
 class HashTable:
     def __init__(self, list_size=1):
         self.length = 0
-        self.element_list = [[] for i in range(list_size)]
+        self.__space__ = [[] for i in range(list_size)]
 
     def __getHashCode(self, key):
-        list_size = len(self.element_list)
-        hashcode = ELFhash(key) * 1317
+        list_size = len(self.__space__)
+        hashcode = hash(key) * 1317
         hashcode = (hashcode % list_size + list_size) % list_size
         hashcode_origin = hashcode
-        while len(self.element_list[hashcode]) != 0 and self.element_list[hashcode][0] != key:
+        while len(self.__space__[hashcode]) != 0 and self.__space__[hashcode][0] != key:
             hashcode += 1
             hashcode %= list_size
             if hashcode_origin == hashcode:
                 break
         return hashcode
 
-    def insert(self, key, value):
-        list_size = len(self.element_list)
+    def insert(self, key, value=1):
+        list_size = len(self.__space__)
         if self.length * 100 >= list_size:
             newHashTable = HashTable(10 * list_size)
-            for item in self.element_list:
+            for item in self.__space__:
                 if not item:
                     continue
                 [key_old, value_old] = item
                 newHashTable.insert(key_old, value_old)
-            self.element_list = newHashTable.element_list
+            self.__space__ = newHashTable.__space__
         hashcode = self.__getHashCode(key)
-        self.element_list[hashcode] = [key, value]
+        self.__space__[hashcode] = [key, value]
         self.length += 1
 
     def delete(self, key):
         hashcode = self.__getHashCode(key)
-        if self.element_list == [] or self.element_list[hashcode][0] == key:
-            self.element_list[hashcode] = []
+        if self.__space__ == [] or self.__space__[hashcode][0] == key:
+            self.__space__[hashcode] = []
 
     def update(self, key, value):
         hashcode = self.__getHashCode(key)
-        if self.element_list == [] or self.element_list[hashcode][0] == key:
-            self.element_list[hashcode] = [key, value]
+        if self.__space__ == [] or self.__space__[hashcode][0] == key:
+            self.__space__[hashcode] = [key, value]
 
     def get(self, key):
         hashcode = self.__getHashCode(key)
-        if len(self.element_list[hashcode]) == 0:
+        if len(self.__space__[hashcode]) == 0:
             return None
-        elif self.element_list[hashcode][0] == key:
-            return self.element_list[hashcode][1]
+        elif self.__space__[hashcode][0] == key:
+            return self.__space__[hashcode][1]
         else:
             return None
 
     def items(self):
         items = []
-        for item in self.element_list:
+        for item in self.__space__:
             if len(item) != 0:
                 key, value = item
                 items.append([key, value])
@@ -72,7 +72,7 @@ class HashTable:
 
     def keys(self):
         keys = []
-        for item in self.element_list:
+        for item in self.__space__:
             if len(item) != 0:
                 key, value = item
                 keys.append(key)
@@ -80,7 +80,7 @@ class HashTable:
 
     def values(self):
         values = []
-        for item in self.element_list:
+        for item in self.__space__:
             if len(item) != 0:
                 key, value = item
                 values.append(value)
@@ -96,7 +96,7 @@ class Trie_Tree:
         self.character = character
         self.has_the_word = False
 
-    def insert(self, key):
+    def insert(self, key, value=0):
         if key == "":
             self.has_the_word = True
             return
