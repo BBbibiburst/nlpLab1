@@ -24,11 +24,13 @@ def get_probability(word_dict, word1, word2):
         probability = word_dict[word1][word2] + 1
         return log(probability)
 
+
 def replace_back(sentence_cut, replace_list):
     for key, item_list in replace_list.items():
         for item in item_list:
             sentence_cut = sentence_cut.replace(key, item, 1)
     return sentence_cut
+
 
 def bigram(sentence, word_dict):
     result = []
@@ -36,13 +38,13 @@ def bigram(sentence, word_dict):
     dp = {d: {} for d in range(sentence_length + 1)}
     dp[0][0] = 0
     minus_limit = -sys.maxsize >> 10
-    for i in range(1,sentence_length + 1):
-        for j in range(i + 1):
+    for i in range(1, sentence_length + 1):
+        #dp[i][i - 1] = (minus_limit >> 10, -1)
+        for j in range(i):
             word2 = sentence[j:i]
             if word_dict[''].get(word2) is None:
                 continue
             max_value = minus_limit
-            word2 = sentence[j:i]
             for k, v in dp[j].items():
                 word1 = sentence[k:j]
                 if word_dict[''].get(word1) is None:
@@ -53,12 +55,13 @@ def bigram(sentence, word_dict):
                     max_value = value
             if max_value > minus_limit:
                 dp[i][j] = max_value
+
     while True:
         if sentence == '':
             break
         length = len(sentence)
         max_pos = 0
-        max_value = 0
+        max_value = -sys.maxsize
         for i, v in dp[length].items():
             if v > max_value:
                 max_value = v
@@ -87,7 +90,7 @@ def calculate(func, SolveFile, seg_gram):
                 for key, value in replace_dict.items():
                     replace_list[value] = re.findall(key, sentence)
                     sentence = re.sub(key, value, sentence)
-                        ##
+                    ##
                 word_list = func(sentence, word_dictionary)
                 sentence_cut = ''
                 for word in word_list:
@@ -101,4 +104,24 @@ def calculate(func, SolveFile, seg_gram):
     print('分词完成,用时{:.2f}s'.format((end - start)))
 
 
-calculate(bigram, SolveFile, seg_Bigram)
+def test(sentence, func, word_dictionary):
+    if sentence == '':
+        return ''
+    replace_list = {i: [] for i in replace_dict.values()}
+    for key, value in replace_dict.items():
+        replace_list[value] = re.findall(key, sentence)
+        sentence = re.sub(key, value, sentence)
+        ##
+    word_list = func(sentence, word_dictionary)
+    sentence_cut = ''
+    for word in word_list:
+        sentence_cut = sentence_cut + word + '/  '
+    sentence_cut = replace_back(sentence_cut, replace_list)
+    return sentence_cut
+
+
+# calculate(bigram, SolveFile, seg_Bigram)
+sentence = '19980101-01-001-004１２月３１日，中共中央总书记、国家主席江泽民发表１９９８年新年讲话《迈向充满希望的新世纪》。（新华社记者兰红光摄）'
+word_dict = get_dict()
+answer = test(sentence, bigram, word_dict)
+print(answer)
