@@ -7,6 +7,8 @@ import time
 
 from replace_dict import replace_dict
 from status_config import *
+import HMM.OOV_discover
+from score import showscore, upper_get_score
 
 
 def get_dict():
@@ -16,11 +18,13 @@ def get_dict():
 
 
 def get_probability(word_dict, word1, word2):
-    if word_dict.get(word1) is None or word_dict[word1].get(word2) is None:
-        return (1 - linear_interpolation) * word_dict[''][word2]
-    else:
-        probability = linear_interpolation * word_dict[word1][word2] + (1 - linear_interpolation) * word_dict[''][word2]
-        return log(probability)
+    # print(word1,' ',word2)
+    probability_bigram = 0
+    if word_dict[word1].get(word2) is not None:
+        probability_bigram = linear_interpolation * word_dict[word1][word2] / word_dict[word1]['__len__']
+    probability_unigram = (1 - linear_interpolation) * word_dict[''][word2] / word_dict['']['__len__']
+    probability = probability_bigram + probability_unigram
+    return log(probability)
 
 
 def replace_back(sentence_cut, replace_list):
@@ -40,7 +44,28 @@ def find_max_value_pos(dp, pos):
     return max_pos
 
 
-def bigram(sentence, word_dict):
+def add_dict(word_dict, last_word, word, p):
+    if word_dict.get(last_word) is None:
+        word_dict[last_word] = {}
+    if word_dict[last_word].get(word) is None:
+        word_dict[last_word][word] = 10 ** -p
+        if word_dict[last_word].get('__len__') is None:
+            word_dict[last_word]['__len__'] = 1
+
+
+def add_into_dict(sentence_cut, word_dict, p):
+    sentence_cut.append('__End__')
+    last_word = ''
+    for i in sentence_cut:
+        word = i
+        add_dict(word_dict, last_word, word, p)
+        add_dict(word_dict, '', word, p)
+        last_word = word
+
+
+def bigram(sentence, word_dict, OOV_param=(11, 11)):
+    add_into_dict([i for i in sentence], word_dict, OOV_param[0])
+    add_into_dict(HMM.OOV_discover.word_segment(sentence, HMM_dict), word_dict, OOV_param[1])
     # viterbi算法计算概率
     result = []
     sentence_length = len(sentence)
@@ -57,6 +82,8 @@ def bigram(sentence, word_dict):
             max_pos = 0
             for k, v in dp[j].items():
                 word1 = sentence[k:j]
+                if word_dict[''].get(word1) is None:
+                    continue
                 prob = get_probability(word_dict, word1, word2)
                 value = v + prob
                 if value > max_value:
@@ -65,12 +92,6 @@ def bigram(sentence, word_dict):
             if max_value > -sys.maxsize:
                 dp[i][j] = max_value
                 dp_back[i][j] = max_pos
-        if len(dp[i]) == 0:
-            dp[i][i - 1] = minus_limit
-            if i - 2 > 0:
-                dp_back[i][i - 1] = i - 2
-            else:
-                dp_back[i][i - 1] = 0
     # 反向计算结果
     length = len(sentence)
     pos = find_max_value_pos(dp, length)
@@ -85,13 +106,11 @@ def bigram(sentence, word_dict):
         word = sentence[pos:]
         sentence = sentence[:pos]
         result.insert(0, word)
-
     return result
 
 
-def calculate(func, SolveFile, seg_gram):
+def calculate(func, SolveFile, seg_gram, OOV_param=(14, 14)):
     print("正在获取词典...")
-    word_dictionary = get_dict()
     print("词典获取完成")
     print("开始分词")
     times = 0
@@ -109,7 +128,7 @@ def calculate(func, SolveFile, seg_gram):
                     replace_list[value] = re.findall(key, sentence)
                     sentence = re.sub(key, value, sentence)
                     ##
-                word_list = func(sentence, word_dictionary)
+                word_list = func(sentence, word_dictionary, OOV_param)
                 sentence_cut = ''
                 for word in word_list:
                     sentence_cut = sentence_cut + word + '/  '
@@ -122,7 +141,7 @@ def calculate(func, SolveFile, seg_gram):
     print('分词完成,用时{:.2f}s'.format((end - start)))
 
 
-def test(sentence, func, word_dictionary):
+def solve(sentence, func, word_dictionary):
     if sentence == '':
         return ''
     replace_list = {i: [] for i in replace_dict.values()}
@@ -138,11 +157,11 @@ def test(sentence, func, word_dictionary):
     return sentence_cut
 
 
-# calculate(bigram, SolveFile, seg_Bigram)
-sentence = '１２月我在打游戏'
-word_dict = get_dict()
-answer = test(sentence, bigram, word_dict)
-print(answer)
-example = '19980101-03-001-004联合国会费比例的“能力支付”原则，即以各国国民生产总值占世界国民生产总值的比重作为基数，同时考虑人均国民生产总值和人均外债负担状况来计算各国应缴的会费额。美国是世界首富，但会费委员会为防止一国负担过重，规定了缴纳上限，美国会费分摊比例为２５％。可是，从１９９４年起，美国一直要求将其对联合国会费的分摊比例由２５％降到２０％，将维和费比例由３１％降至２５％，并以拒付会费作要挟。这种做法只能使联合国会费比例具有极大随意性，不利于联合国财政基础的稳定，遭到广大成员国的反对。在此情况下，美国仍继续拖欠会费１３亿多美元，并且提出联合国改革尺度法案，把付清欠款同联合国改革挂钩，结果遭到空前孤立。'
-answer = test(example, bigram, word_dict)
-print(answer)
+word_dictionary = get_dict()
+HMM_dict = HMM.OOV_discover.get_dict()
+calculate(bigram, SolveFile, seg_Bigram)
+sentence = '维尔茨堡是美因河畔的一座城堡。玛利恩堡（Festung Marienberg）是德国维尔茨堡美因河畔的一座城堡，它是维尔茨堡的象征，作为王子主教的家近5个世纪。自古以来这里就是一个要塞。大约1600年，朱利叶·埃希特（Julius Echter）将其重建成一个文艺复兴时期的宫殿堡垒。30年战争期间， 1631年瑞典古斯塔夫二世·阿道夫，堡垒于1657年改建为一个更强大的巴洛克式堡垒，一个王子公园布局形成。'
+print(solve(sentence, bigram, word_dictionary))
+sentence = '中共中央于10月24日上午10时举行新闻发布会，中共中央总书记习近平同志，中央政法委秘书长陈一新同志，中央政策研究室主任江金权同志，中央改革办分管日常工作的副主任、国家发展改革委副主任穆虹同志，中央纪委国家监委宣传部部长王建新同志，中央办公厅副主任兼调研室主任唐方裕同志，中央宣传部副部长孙业礼同志介绍解读党的二十大报告主要精神。李克强、栗战书、汪洋、李强、赵乐际、王沪宁、韩正、蔡奇、丁薛祥、李希、王岐山、马兴瑞、王晨、王毅、尹力、石泰峰、刘鹤、刘国中、许其亮、孙春兰、李干杰、李书磊、李鸿忠、杨晓渡、何卫东、何立峰、张又侠、张国清、陈文清、陈吉宁、陈敏尔、胡春华、袁家军、黄坤明、温家宝、贾庆林、张德江、俞正声、宋平、李岚清、曾庆红、吴官正、李长春、贺国强、刘云山、张高丽、刘金国、王小洪、杨洁篪、陈希、陈全国、郭声琨、尤权参加了会见。'
+print(solve(sentence, bigram, word_dictionary))
+

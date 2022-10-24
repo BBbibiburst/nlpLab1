@@ -71,13 +71,6 @@ def add_word_into_dict(word_list, status_list, prob_dict):
         sentence += word
     length = len(sentence)
     for i in range(length):
-        # if i == 0:
-        #     prob_dict[''][status_list[i]] += 1
-        # else:
-        #     prob_dict[status_list[i - 1]][status_list[i]] += 1
-        # if prob_dict.get(sentence[i]) is None:
-        #     prob_dict[sentence[i]] = default_probs_dict()
-        # prob_dict[sentence[i]][status_list[i]] += 1
         if i == 0:
             prob_dict[''][status_list[i]] += 1
         else:
@@ -105,32 +98,32 @@ def make_dict(TrainingDataFile):
             line = line.rstrip()
             for key, value in replace_dict.items():
                 line = re.sub(key, value, line)
-            word_list = get_word_list(line)
+            word_list = get_word_seperated_list(line)
             status_list = get_status_list(word_list)
             add_word_into_dict(word_list, status_list, prob_dict)
 
 
 for data in TrainingDataFile:
     make_dict(data)
+
 for key, value in prob_dict.items():
     total = 0
-    for s,num in value.items():
+    for s, num in value.items():
         if s in 'BMES':
             total += num
     for s in Status:
         if prob_dict[key][s.value] == 0:
             prob_dict[key][s.value] = minus_limit
         else:
-            prob_dict[key][s.value] = log((prob_dict[key][s.value])/total)
+            prob_dict[key][s.value] = log((prob_dict[key][s.value]) / total)
 for s in Status:
     total = 0
-    for key,value in prob_dict[s.value].items():
+    for key, value in prob_dict[s.value].items():
         if key not in 'BMES':
             total += value
     for key in prob_dict[s.value].keys():
         if key not in 'BMES':
             prob_dict[s.value][key] = log((prob_dict[s.value][key]) / total)
-
 
 with open(ProbDict, 'w', encoding='ansi') as f:
     json_dump = json.dumps(prob_dict)

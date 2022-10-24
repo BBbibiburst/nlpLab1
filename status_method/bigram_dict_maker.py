@@ -89,6 +89,7 @@ def make_dict(TrainingDataFile):
                 word_bigram_seperated_list.extend(complex_list)
             else:
                 word_seperated_list = get_word_seperated_list(line)
+                word_seperated_list.append('__End__')
                 word_bigram_seperated_list = getBigram(word_seperated_list)
             for word_partner in word_bigram_seperated_list:
                 if word_seg_dict.get(word_partner[0]) is None:
@@ -111,7 +112,6 @@ for key in word_seg_dict.keys():
     for val in word_seg_dict[key].values():
         word_seg_dict[key]['__len__'] += val
         word_seg_dict['']['__total_len__'] += val
-
 
 
 with open(Bigram_Dict, 'w', encoding='ansi') as f:

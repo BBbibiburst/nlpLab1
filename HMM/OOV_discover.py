@@ -3,7 +3,7 @@ import json
 import re
 import sys
 import time
-from HMM_config import *
+from HMM.HMM_config import *
 from replace_dict import replace_dict
 
 
@@ -73,11 +73,13 @@ def word_segment(sentence, prob_dict):
         status_list = status_list[pos + 1:]
     return result
 
+
 def replace_back(sentence_cut, replace_list):
     for key, item_list in replace_list.items():
         for item in item_list:
             sentence_cut = sentence_cut.replace(key, item, 1)
     return sentence_cut
+
 
 def calculate(func, SolveFile, seg_gram):
     print("正在获取词典...")
@@ -110,4 +112,5 @@ def calculate(func, SolveFile, seg_gram):
     print('分词完成,用时{:.2f}s'.format((end - start)))
 
 
-calculate(word_segment, SolveFile, seg_HMM)
+if __name__ == '__main__':
+    calculate(word_segment, SolveFile, seg_HMM)

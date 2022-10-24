@@ -25,7 +25,7 @@ def getWord(word):
 
 def getInterval_answer(line, text):
     interval = []
-    line_split = re.findall(r'[^\[\[\s]*/[^\[\]\s]*',line)
+    line_split = re.findall(r'[^\[\[\s]*/[^\[\]\s]*', line)
     pos = 0
     for word in line_split:
         word = getWord(word)
@@ -51,6 +51,12 @@ def getSore(answer_interval, result_interval):
     return len(answer_and_result), len(answer), len(result)
 
 
+def show(result_interval, text,f):
+    for word in result_interval:
+        f.write(text[word[0]:word[1]+1] + '/  ')
+    f.write('\n')
+
+
 def getTotalScore(AnswerName, ResultName):
     answer_and_result = 0
     answer = 0
@@ -66,14 +72,23 @@ def getTotalScore(AnswerName, ResultName):
                 answer_and_result += score[0]
                 answer += score[1]
                 result += score[2]
+                if score[1] != score[2]:
+                    with open('wrong.txt', 'a', encoding='ansi') as f:
+                        show(answer_interval, text,f)
+                        show(result_interval, text,f)
     precision = answer_and_result / result
     recall = answer_and_result / answer
     F1 = 2 * precision * recall / (precision + recall)
     return precision, recall, F1
 
+def showscore():
+    print("正在计算...")
+    score = getTotalScore(TrainingDataFile, seg_Bigram)
+    print("计算完成")
+    print('Bigram:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score[0], score[1], score[2]))
 
-print("正在计算...")
-score = getTotalScore(TrainingDataFile, seg_Bigram)
-print("计算完成")
-print('Bigram:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score[0], score[1], score[2]))
+def upper_get_score():
+    return getTotalScore(TrainingDataFile, seg_Bigram)
 
+if __name__ == "__main__":
+    showscore()
