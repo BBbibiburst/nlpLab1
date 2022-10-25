@@ -1,4 +1,4 @@
-TrainingDataFile = [r'../resources/199802.txt', r'../resources/199803.txt']
+TrainingDataFile = [r'../resources/199801_seg&pos.txt', r'../resources/199802.txt', r'../resources/199803.txt']
 # TrainingDataFile= [r'../resources/199801_seg&pos.txt']
 SolveFile = r'../resources/199801_sent.txt'
 Unigram_Dict = r'../results/unigram_dict.txt'

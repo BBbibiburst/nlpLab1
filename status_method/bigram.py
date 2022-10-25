@@ -8,7 +8,7 @@ import time
 from replace_dict import replace_dict
 from status_config import *
 import HMM.OOV_discover
-from score import showscore, upper_get_score
+import HMM.NAME_discover
 
 
 def get_dict():
@@ -66,6 +66,7 @@ def add_into_dict(sentence_cut, word_dict, p):
 def bigram(sentence, word_dict, OOV_param=(11, 11)):
     add_into_dict([i for i in sentence], word_dict, OOV_param[0])
     add_into_dict(HMM.OOV_discover.word_segment(sentence, HMM_dict), word_dict, OOV_param[1])
+    add_into_dict(HMM.NAME_discover.word_segment(sentence, HMM_Name_dict), word_dict, OOV_param[1])
     # viterbi算法计算概率
     result = []
     sentence_length = len(sentence)
@@ -159,6 +160,7 @@ def solve(sentence, func, word_dictionary):
 
 word_dictionary = get_dict()
 HMM_dict = HMM.OOV_discover.get_dict()
+HMM_Name_dict = HMM.NAME_discover.get_dict()
 calculate(bigram, SolveFile, seg_Bigram)
 sentence = '维尔茨堡是美因河畔的一座城堡。玛利恩堡（Festung Marienberg）是德国维尔茨堡美因河畔的一座城堡，它是维尔茨堡的象征，作为王子主教的家近5个世纪。自古以来这里就是一个要塞。大约1600年，朱利叶·埃希特（Julius Echter）将其重建成一个文艺复兴时期的宫殿堡垒。30年战争期间， 1631年瑞典古斯塔夫二世·阿道夫，堡垒于1657年改建为一个更强大的巴洛克式堡垒，一个王子公园布局形成。'
 print(solve(sentence, bigram, word_dictionary))

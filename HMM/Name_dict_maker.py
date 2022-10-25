@@ -17,20 +17,24 @@ def getWord(word):
         if i != len(word_split) - 1:
             word += word_split[i] + '/'
     word = word[:-1]
-    return word,word_class
+    return word, word_class
 
 
 def get_word_seperated_list(line):
     word_seperated_list_result = []
     line_split = re.findall(r'[^\[\s]*/[^/\s\]]*', line)
     for word in line_split:
-        word,word_class = getWord(word)
-        word_seperated_list_result.append((word,word_class))
+        word, word_class = getWord(word)
+        word_seperated_list_result.append((word, word_class))
     return word_seperated_list_result
 
 
 def default_probs_dict():
-    return {'B': 0, 'M': 0, 'E': 0, 'S': 0, 'O': 0}
+    return {'B': 0,
+            'M': 0,
+            'E': 0,
+            'S': 0,
+            'O': 0,}
 
 
 def get_status_list(word_list):
@@ -40,7 +44,7 @@ def get_status_list(word_list):
         word_class = word_pair[1]
         word_len = len(word)
         if word_class != 'nr':
-            status_list += 'O'* word_len
+            status_list += 'O' * word_len
             continue
         if word_len == 1:
             status_list += 'S'
@@ -94,17 +98,19 @@ def make_dict(TrainingDataFile):
             word_list = [word_pair[0] for word_pair in word_list]
             add_word_into_dict(word_list, status_list, prob_dict)
 
+
 def add_name():
     with open(NameTrainSet, 'r', encoding='ansi') as corpus:
         for line in corpus:
             word_list = get_word_seperated_list(line)
-            line = re.sub(r'/nr  [\n]*','',line)
+            line = re.sub(r'/nr  [\n]*', '', line)
             status_list = get_status_list(word_list)
             word_list = [word_pair[0] for word_pair in word_list]
             for i in range(len(line)):
                 if prob_dict[status_list[i]].get(line[i]) is None:
                     prob_dict[status_list[i]][line[i]] = 0
                 prob_dict[status_list[i]][line[i]] += 1
+
 
 for data in TrainingDataFile:
     make_dict(data)
