@@ -1,6 +1,7 @@
 from enum import Enum
 
-TrainingDataFile = [r'../resources/199801_seg&pos.txt', r'../resources/199802.txt', r'../resources/199803.txt',r'../resources/name_cut.txt']
+TrainingDataFile = [r'../resources/199801_seg&pos.txt', r'../resources/199802.txt', r'../resources/199803.txt',
+                    r'../resources/name_cut.txt']
 ProbDict = r'../results/prob_dict.txt'
 name_set = r'../resources/name_gbk.txt'
 NameTrainSet = r'../resources/name_cut.txt'
@@ -18,6 +19,7 @@ class Status(Enum):
     M = 'M'
     E = 'E'
     S = 'S'
+
 
 class NameStatus(Enum):
     B = 'B'

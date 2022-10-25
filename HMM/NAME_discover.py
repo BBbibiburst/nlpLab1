@@ -69,7 +69,8 @@ def word_segment(sentence, prob_dict):
         if o == -1:
             o = sys.maxsize
         pos = min(s, e, o)
-        result.append(sentence[:pos + 1])
+        if pos != o:
+            result.append(sentence[:pos + 1])
         sentence = sentence[pos + 1:]
         status_list = status_list[pos + 1:]
     return result
@@ -104,7 +105,7 @@ def calculate(func, SolveFile, seg_gram):
                 sentence_cut = ''
                 for word in word_list:
                     sentence_cut = sentence_cut + word + '/  '
-                sentence_cut = replace_back(sentence_cut, replace_list)
+                #sentence_cut = replace_back(sentence_cut, replace_list)
                 result_file.write(sentence_cut)
                 result_file.write('\n')
                 times += 1

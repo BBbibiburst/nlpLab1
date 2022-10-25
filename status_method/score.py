@@ -63,17 +63,17 @@ def getTotalScore(AnswerName, ResultName):
     result = 0
     with open(AnswerName, 'r', encoding='ansi') as answer_file:
         with open(ResultName, 'r', encoding='ansi') as result_file:
-            for answer_line in answer_file:
-                result_line = result_file.readline()
-                text = getText(result_line)
-                answer_interval = getInterval_answer(answer_line, text)
-                result_interval = getInterval_result(result_line, text)
-                score = getSore(answer_interval, result_interval)
-                answer_and_result += score[0]
-                answer += score[1]
-                result += score[2]
-                if score[1] != score[2]:
-                    with open('wrong.txt', 'a', encoding='ansi') as f:
+            with open('wrong.txt', 'w', encoding='ansi') as f:
+                for answer_line in answer_file:
+                    result_line = result_file.readline()
+                    text = getText(result_line)
+                    answer_interval = getInterval_answer(answer_line, text)
+                    result_interval = getInterval_result(result_line, text)
+                    score = getSore(answer_interval, result_interval)
+                    answer_and_result += score[0]
+                    answer += score[1]
+                    result += score[2]
+                    if score[1] != score[2]:
                         show(answer_interval, text,f)
                         show(result_interval, text,f)
     precision = answer_and_result / result
