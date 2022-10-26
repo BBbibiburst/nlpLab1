@@ -10,7 +10,7 @@ SolveFile = r'../resources/199801_sent.txt'
 seg_HMM = r'../results/seg_HMM.txt'
 seg_Name = r'../results/seg_Name.txt'
 include_seperated_words = False
-minus_limit = -1000000
+minus_limit = -100000000
 
 
 class Status(Enum):

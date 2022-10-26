@@ -3,7 +3,7 @@ import json
 import re
 import sys
 import time
-from TnT_config import *
+from TnT.TnT_config import *
 from replace_dict import replace_dict
 
 
@@ -14,59 +14,65 @@ def get_dict():
 
 
 def get_prob(prob_dict, tag1, tag2, tag3):
+    # return prob_dict[tag1][tag2][tag3]
     return prob_dict['lambda1'] * prob_dict['BACK_OFF']['BACK_OFF'][tag3] \
-           + prob_dict['lambda2'] * prob_dict['BACK_OFF'][tag2][tag3] \
-           + prob_dict['lambda3'] * prob_dict[tag1][tag2][tag3]
+          + prob_dict['lambda2'] * prob_dict['BACK_OFF'][tag2][tag3] \
+          + prob_dict['lambda3'] * prob_dict[tag1][tag2][tag3]
 
 
 def viterbi(sentence, prob_dict):
     result = ''
     sentence_length = len(sentence)
-    dp = {i: {'': {}, 'B': {}, 'M': {}, 'E': {}, 'S': {}} for i in range(sentence_length)}
+    dp = {i: {'B': {}, 'M': {}, 'E': {}, 'S': {}} for i in range(sentence_length)}
+    dp[0][''] = {}
     for i in range(sentence_length):
         for s in Status:
             sv = s.value
             if i == 0:
                 if sv in 'EM':
                     continue
-                emit = prob_dict[sv].get(sentence[i])
+                emit = prob_dict['_C_'][sv].get(sentence[i])
                 if emit is None:
                     emit = minus_limit
                 dp[i][''][sv] = (get_prob(prob_dict, '', '', sv) + emit, '', '')
             elif i == 1:
-                emit = prob_dict[sv].get(sentence[i])
+                emit = prob_dict['_C_'][sv].get(sentence[i])
                 if emit is None:
                     emit = minus_limit
-                for sv_pre in Status:
-                    if sv_pre.value in 'BM' and sv in 'BS':
+                for svPre in Status:
+                    if svPre.value in 'BM' and sv in 'BS':
                         continue
-                    if sv_pre.value == 'ES' and sv == 'M':
+                    if svPre.value in 'ES' and sv in 'M':
                         continue
-                    dp[i][sv_pre.value][sv] = (get_prob(prob_dict, '', sv_pre.value, sv) + emit, '', sv_pre.value)
+                    if dp[i-1][''].get(svPre.value) is None:
+                        continue
+                    dp[i][svPre.value][sv] = (get_prob(prob_dict, '', svPre.value, sv) + emit, '', svPre.value)
             else:
-                for sv_pre in Status:
-                    if sv_pre.value in 'BM' and sv in 'BS':
+                for svPre in Status:
+                    if svPre.value in 'BM' and sv in 'BS':
                         continue
-                    if sv_pre.value == 'ES' and sv == 'M':
+                    if svPre.value in 'ES' and sv in 'M':
                         continue
                     dp_p = -sys.maxsize
                     dp_s = None
                     dp_s2 = None
                     for sv_pre2 in Status:
-                        value = dp[i - 1][sv_pre2.value].get(sv_pre.value)
+                        value = dp[i - 1][sv_pre2.value].get(svPre.value)
                         if value is None:
                             continue
                         prob_pre = value[0]
-                        trans = get_prob(prob_dict, sv_pre2.value, sv_pre.value, sv)
-                        emit = prob_dict[sv].get(sentence[i])
+                        trans = get_prob(prob_dict, sv_pre2.value, svPre.value, sv)
+                        emit = prob_dict['_C_'][sv].get(sentence[i])
                         if emit is None:
                             emit = minus_limit
                         prob = prob_pre + trans + emit
                         if prob > dp_p:
                             dp_p = prob
-                            dp_s = sv_pre.value
+                            dp_s = svPre.value
                             dp_s2 = sv_pre2.value
-                    dp[i][sv_pre.value][sv] = (dp_p, dp_s2, dp_s)
+                    if dp[i-1][dp_s2].get(dp_s) is None:
+                        continue
+                    dp[i][svPre.value][sv] = (dp_p, dp_s2, dp_s)
 
     dp_prob = -sys.maxsize
     dp_pos = None
@@ -74,19 +80,20 @@ def viterbi(sentence, prob_dict):
         sv = s.value
         if sv in 'BM':
             continue
-        for sv_pre in Status:
-            dp_value = dp[sentence_length - 1][sv_pre.value].get(sv)
+        for svPre in Status:
+            dp_value = dp[sentence_length - 1][svPre.value].get(sv)
             if dp_value is None:
                 continue
             if dp_value[0] > dp_prob:
                 dp_prob = dp_value[0]
-                dp_pos = (sv_pre.value, sv)
-        dp_value = dp[sentence_length - 1][''].get(sv)
-        if dp_value is None:
-            continue
-        if dp_value[0] > dp_prob:
-            dp_prob = dp_value[0]
-            dp_pos = ('', sv)
+                dp_pos = (svPre.value, sv)
+        if sentence_length == 1:
+            dp_value = dp[sentence_length - 1][''].get(sv)
+            if dp_value is None:
+                continue
+            if dp_value[0] > dp_prob:
+                dp_prob = dp_value[0]
+                dp_pos = ('', sv)
     result = dp_pos[0] + dp_pos[1] + result
     for i in range(sentence_length):
         dp_pos = dp[sentence_length - i - 1][dp_pos[0]][dp_pos[1]][1:3]

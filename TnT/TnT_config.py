@@ -1,6 +1,6 @@
 from enum import Enum
 
-TrainingDataFile = [r'../resources/199801_seg&pos.txt']#, r'../resources/199802.txt', r'../resources/199803.txt']
+TrainingDataFile = [r'../resources/199801_seg&pos.txt', r'../resources/199802.txt', r'../resources/199803.txt']
 ProbDict = r'../results/TnT_prob_dict.txt'
 name_set = r'../resources/TnT_name_gbk.txt'
 NameTrainSet = r'../resources/name_cut.txt'
@@ -10,7 +10,7 @@ SolveFile = r'../resources/199801_sent.txt'
 seg_TnT = r'../results/seg_TnT.txt'
 seg_Name = r'../results/seg_TnT_Name.txt'
 include_seperated_words = False
-minus_limit = -1000000
+minus_limit = -100000000
 
 
 class Status(Enum):

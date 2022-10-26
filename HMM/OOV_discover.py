@@ -21,8 +21,8 @@ def viterbi(sentence, prob_dict):
         for s in Status:
             sv = s.value
             if i == 0:
-                emit = prob_dict[sv].get(sentence[i])
-                if emit == None:
+                emit = prob_dict['_C_'][sv].get(sentence[i])
+                if emit is None:
                     emit = minus_limit
                 dp[i][sv] = (prob_dict[''][sv] + emit, '')
             else:
@@ -31,7 +31,7 @@ def viterbi(sentence, prob_dict):
                 for sv_pre in Status:
                     prob_pre = dp[i - 1][sv_pre.value][0]
                     trans = prob_dict[sv_pre.value][sv]
-                    emit = prob_dict[sv].get(sentence[i])
+                    emit = prob_dict['_C_'][sv].get(sentence[i])
                     if emit == None:
                         emit = minus_limit
                     prob = prob_pre + trans + emit

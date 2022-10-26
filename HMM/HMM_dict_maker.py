@@ -75,9 +75,9 @@ def add_word_into_dict(word_list, status_list, prob_dict):
             prob_dict[''][status_list[i]] += 1
         else:
             prob_dict[status_list[i - 1]][status_list[i]] += 1
-        if prob_dict[status_list[i]].get(sentence[i]) is None:
-            prob_dict[status_list[i]][sentence[i]] = 1
-        prob_dict[status_list[i]][sentence[i]] += 1
+        if prob_dict['_C_'][status_list[i]].get(sentence[i]) is None:
+            prob_dict['_C_'][status_list[i]][sentence[i]] = 1
+        prob_dict['_C_'][status_list[i]][sentence[i]] += 1
 
 
 prob_dict = {}
@@ -89,6 +89,7 @@ prob_dict['B'] = default_probs_dict()
 prob_dict['M'] = default_probs_dict()
 prob_dict['E'] = default_probs_dict()
 prob_dict['S'] = default_probs_dict()
+prob_dict['_C_'] = {'B': {}, 'M': {}, 'E': {}, 'S': {}}
 
 
 def make_dict(TrainingDataFile):
@@ -108,6 +109,8 @@ for data in TrainingDataFile:
 
 for key, value in prob_dict.items():
     total = 0
+    if key == '_C_':
+        continue
     for s, num in value.items():
         if s in 'BMES':
             total += num
@@ -118,12 +121,12 @@ for key, value in prob_dict.items():
             prob_dict[key][s.value] = log((prob_dict[key][s.value]) / total)
 for s in Status:
     total = 0
-    for key, value in prob_dict[s.value].items():
+    for key, value in prob_dict['_C_'][s.value].items():
         if key not in 'BMES':
             total += value
-    for key in prob_dict[s.value].keys():
+    for key in prob_dict['_C_'][s.value].keys():
         if key not in 'BMES':
-            prob_dict[s.value][key] = log((prob_dict[s.value][key]) / total)
+            prob_dict['_C_'][s.value][key] = log((prob_dict['_C_'][s.value][key]) / total)
 
 with open(ProbDict, 'w', encoding='ansi') as f:
     json_dump = json.dumps(prob_dict)

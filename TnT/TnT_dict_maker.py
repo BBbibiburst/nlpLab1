@@ -72,9 +72,9 @@ def add_word_into_dict(word_list, status_list, prob_dict):
             prob_dict[status_list[i - 2]][status_list[i - 1]][status_list[i]] += 1
             prob_dict['BACK_OFF'][status_list[i - 1]][status_list[i]] += 1
         prob_dict['BACK_OFF']['BACK_OFF'][status_list[i]] += 1
-        if prob_dict[status_list[i]].get(sentence[i]) is None:
-            prob_dict[status_list[i]][sentence[i]] = 0
-        prob_dict[status_list[i]][sentence[i]] += 1
+        if prob_dict['_C_'][status_list[i]].get(sentence[i]) is None:
+            prob_dict['_C_'][status_list[i]][sentence[i]] = 0
+        prob_dict['_C_'][status_list[i]][sentence[i]] += 1
 
 
 prob_dict = {}
@@ -88,6 +88,7 @@ prob_dict['B'] = default_TnT_probs_dict()
 prob_dict['M'] = default_TnT_probs_dict()
 prob_dict['E'] = default_TnT_probs_dict()
 prob_dict['S'] = default_TnT_probs_dict()
+prob_dict['_C_'] = {'B': {}, 'M': {}, 'E': {}, 'S': {}}
 
 
 def make_dict(TrainingDataFile):
@@ -107,6 +108,7 @@ for data in TrainingDataFile:
 
 # 求解λ
 lambda1 = lambda2 = lambda3 = 0
+N = sum([prob_dict['BACK_OFF']['BACK_OFF'][s.value] for s in Status])
 for s1 in Status:
     for s2 in Status:
         for s3 in Status:
@@ -121,12 +123,11 @@ for s1 in Status:
             num1 = 0
             num2 = 0
             num3 = 0
-            N = sum([prob_dict['BACK_OFF']['BACK_OFF'][s.value] for s in Status])
-            if f12 != 0:
+            if f12 - 1 != 0:
                 num1 = (f123 - 1) / (f12 - 1)
-            if f2 != 0:
+            if f2 - 1 != 0:
                 num2 = (f23 - 1) / (f2 - 1)
-            if N != 0:
+            if N - 1 != 0:
                 num3 = (f3 - 1) / (N - 1)
             max_value = max(num1, num2, num3)
             if max_value == num1:
@@ -147,6 +148,8 @@ prob_dict['lambda2'] = lambda2
 prob_dict['lambda3'] = lambda3
 # tri-gram概率
 for key1, sub_dict in prob_dict.items():
+    if key == '_C_':
+        continue
     if key1 not in "BMES":
         continue
     for key2, value in sub_dict.items():
@@ -163,12 +166,12 @@ for key1, sub_dict in prob_dict.items():
                 prob_dict[key1][key2][s.value] = log((prob_dict[key1][key2][s.value]) / total)
 for s in Status:
     total = 0
-    for key, value in prob_dict[s.value].items():
+    for key, value in prob_dict['_C_'][s.value].items():
         if key not in 'BMES' and key != 'BACK_OFF':
             total += value
-    for key in prob_dict[s.value].keys():
+    for key in prob_dict['_C_'][s.value].keys():
         if key not in 'BMES' and key != 'BACK_OFF':
-            prob_dict[s.value][key] = log((prob_dict[s.value][key]) / total)
+            prob_dict['_C_'][s.value][key] = log((prob_dict['_C_'][s.value][key]) / total)
 
 # bigram概率
 for key, value in prob_dict['BACK_OFF'].items():

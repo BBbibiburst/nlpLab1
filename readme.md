@@ -10,3 +10,6 @@ phy.py调用phy_utils.py中的类和方法将FMM和BMM结果输出。
 
 3.4 分词程序的优化保存在physicial_method/phy_fixed1.py，phy_fixed2.py和phy_utils.py中
 本次优化实现了哈希表，并利用哈希表优化了3.2的Trie树，phy_fixed1.py调用优化的Trie树，而phy_fixed2.py直接使用哈希表进行分词
+
+
+bigram改进：自动参数确定，词典删除,合并用BM

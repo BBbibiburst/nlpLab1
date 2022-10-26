@@ -5,8 +5,9 @@ from math import log
 import sys
 import time
 
+import TnT.TnT_OOV_discover
 from replace_dict import replace_dict
-from status_config import *
+from status_method.status_config import *
 import HMM.OOV_discover
 import HMM.NAME_discover
 
@@ -65,7 +66,7 @@ def add_into_dict(sentence_cut, word_dict, p):
 
 def bigram(sentence, word_dict, OOV_param=(11, 11)):
     add_into_dict([i for i in sentence], word_dict, OOV_param[0])
-    add_into_dict(HMM.OOV_discover.word_segment(sentence, HMM_dict), word_dict, OOV_param[1])
+    add_into_dict(TnT.TnT_OOV_discover.word_segment(sentence, TnT_dict), word_dict, OOV_param[1])
     add_into_dict(HMM.NAME_discover.word_segment(sentence, HMM_Name_dict), word_dict, OOV_param[1])
     # viterbi算法计算概率
     result = []
@@ -157,13 +158,8 @@ def solve(sentence, func, word_dictionary):
     sentence_cut = replace_back(sentence_cut, replace_list)
     return sentence_cut
 
-
 word_dictionary = get_dict()
-HMM_dict = HMM.OOV_discover.get_dict()
+TnT_dict = TnT.TnT_OOV_discover.get_dict()
 HMM_Name_dict = HMM.NAME_discover.get_dict()
-calculate(bigram, SolveFile, seg_Bigram)
-sentence = '维尔茨堡是美因河畔的一座城堡。玛利恩堡（Festung Marienberg）是德国维尔茨堡美因河畔的一座城堡，它是维尔茨堡的象征，作为王子主教的家近5个世纪。自古以来这里就是一个要塞。大约1600年，朱利叶·埃希特（Julius Echter）将其重建成一个文艺复兴时期的宫殿堡垒。30年战争期间， 1631年瑞典古斯塔夫二世·阿道夫，堡垒于1657年改建为一个更强大的巴洛克式堡垒，一个王子公园布局形成。'
-print(solve(sentence, bigram, word_dictionary))
-sentence = '中共中央于10月24日上午10时举行新闻发布会，中共中央总书记习近平同志，中央政法委秘书长陈一新同志，中央政策研究室主任江金权同志，中央改革办分管日常工作的副主任、国家发展改革委副主任穆虹同志，中央纪委国家监委宣传部部长王建新同志，中央办公厅副主任兼调研室主任唐方裕同志，中央宣传部副部长孙业礼同志介绍解读党的二十大报告主要精神。李克强、栗战书、汪洋、李强、赵乐际、王沪宁、韩正、蔡奇、丁薛祥、李希、王岐山、马兴瑞、王晨、王毅、尹力、石泰峰、刘鹤、刘国中、许其亮、孙春兰、李干杰、李书磊、李鸿忠、杨晓渡、何卫东、何立峰、张又侠、张国清、陈文清、陈吉宁、陈敏尔、胡春华、袁家军、黄坤明、温家宝、贾庆林、张德江、俞正声、宋平、李岚清、曾庆红、吴官正、李长春、贺国强、刘云山、张高丽、刘金国、王小洪、杨洁篪、陈希、陈全国、郭声琨、尤权参加了会见。'
-print(solve(sentence, bigram, word_dictionary))
-
+if __name__ == '__main__':
+    calculate(bigram, SolveFile, seg_Bigram)
