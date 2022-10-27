@@ -5,7 +5,7 @@ from math import log
 import sys
 import time
 from replace_dict import replace_dict
-from Tri_CBGM_config import *
+from config.Tri_CBGM_config import *
 
 
 def get_dict():
@@ -18,11 +18,14 @@ def get_probability(word_dict, word1, word2, word3):
     # print(word1,' ',word2)
     probability_trigram = minus_limit
     probability_bigram = minus_limit
-    if word_dict[word1][word2].get(word3) is not None:
+    probability_unigram = minus_limit
+    if word_dict.get(word1) is not None and word_dict[word1].get(word2) is not None and word_dict[word1][word2].get(
+            word3) is not None:
         probability_trigram = word_dict['lambda3'] * word_dict[word1][word2][word3]
-    if word_dict['BACK_OFF'][word2].get(word3) is not None:
+    if word_dict['BACK_OFF'].get(word2) is not None and word_dict['BACK_OFF'][word2].get(word3) is not None:
         probability_bigram = word_dict['lambda2'] * word_dict['BACK_OFF'][word2][word3]
-    probability_unigram = word_dict['lambda1'] * word_dict['BACK_OFF']['BACK_OFF'][word3]
+    if word_dict['BACK_OFF']['BACK_OFF'].get(word3) is not None:
+        probability_unigram = word_dict['lambda1'] * word_dict['BACK_OFF']['BACK_OFF'][word3]
     probability = probability_trigram + probability_bigram + probability_unigram
     return probability
 
@@ -38,69 +41,94 @@ def find_max_pos(dp, pos):
     max_value = -sys.maxsize
     max_pos = None
     for s in Status:
-        if dp[pos][s.value] > max_value:
-            max_value = dp[pos][s.value]
-            max_pos = s.value
+        for s2 in Status:
+            if dp[pos][s.value][s2.value] > max_value:
+                max_value = dp[pos][s.value][s2.value]
+                max_pos = (s.value, s2.value)
     return max_value, max_pos
 
-# TODO
+
+def find_max_pos_1(dp, pos):
+    max_value = -sys.maxsize
+    max_pos = None
+    for s in Status:
+        if dp[pos][''][s.value] > max_value:
+            max_value = dp[pos][''][s.value]
+            max_pos = ('', s.value)
+    return max_value, max_pos
+
+
+def find_max_pos_2(dp, pos):
+    max_value = -sys.maxsize
+    max_pos = None
+    for s in Status:
+        for s2 in Status:
+            if s2.value in 'BM':
+                continue
+            if dp[pos][s.value][s2.value] > max_value:
+                max_value = dp[pos][s.value][s2.value]
+                max_pos = (s.value, s2.value)
+    return max_value, max_pos
+
+
 def tri_cbgm_viterbi(sentence, word_dictionary):
+    if len(sentence) == 1:
+        return 'S'
     result = ''
-    dp = {i: {s.value: -sys.maxsize for s in Status} for i in range(len(sentence))}
-    dp_back = {i: {s.value: None for s in Status} for i in range(len(sentence))}
+    dp = {i: {s.value: {s2.value: -sys.maxsize >> 10 for s2 in Status} for s in Status} for i in range(len(sentence))}
+    dp_back = {i: {s.value: {s2.value: None for s2 in Status} for s in Status} for i in range(len(sentence))}
+    dp[0] = {'': {}}
+    dp_back[0] = {'': {}}
     for i in range(len(sentence)):
         for s in Status:
             sv = s.value
-            if word_dictionary['BACK_OFF'].get(sentence[i] + ' ' + sv) is None:
-                if i == 0:
-                    dp[i][sv] = minus_limit
-                    dp_back[i][sv] = ''
-                else:
-                    max_value, max_pos = find_max_pos(dp, i - 1)
-                    dp[i][sv] = minus_limit + max_value
-                    dp_back[i][sv] = max_pos
-                continue
             if i == 0:
                 if sv in 'EM':
                     continue
-                dp[i][sv] = get_probability(word_dictionary, ' ', sentence[i] + ' ' + sv)
-                dp_back[i][sv] = ''
-            else:
-                dp_isv = -sys.maxsize
-                for s_pre in Status:
-                    sv_pre = s_pre.value
+                dp[i][''][sv] = get_probability(word_dictionary, ' ', ' ', sentence[i] + ' ' + sv)
+                dp_back[i][''][sv] = ('', '')
+                continue
+            for s_pre in Status:
+                sv_pre = s_pre.value
+                if i == 1:
+                    if dp[i - 1][''].get(sv_pre) is None:
+                        continue
+                    dp[i][sv_pre][sv] = get_probability(word_dictionary, ' ', sentence[i - 1] + ' ' + sv_pre,
+                                                        sentence[i] + ' ' + sv) + dp[i - 1][''][sv_pre]
+                    dp_back[i][sv_pre][sv] = ('', sv_pre)
+                else:
+                    dp_isv = -sys.maxsize
                     if sv in 'BS' and sv_pre in 'BM':
                         continue
                     if sv in 'ME' and sv_pre in 'ES':
                         continue
-                    if word_dictionary['BACK_OFF'].get(sentence[i - 1] + ' ' + sv_pre) is None:
-                        continue
-                    if dp[i - 1].get(sv_pre) is None:
-                        continue
-                    dp_value = get_probability(word_dictionary, sentence[i - 1] + ' ' + sv_pre,
-                                               sentence[i] + ' ' + sv) + dp[i - 1][sv_pre]
-                    if dp_value > dp_isv:
-                        dp_isv = dp_value
-                        dp_back[i][sv] = sv_pre
-                if dp_isv != -sys.maxsize:
-                    dp[i][sv] = dp_isv
-                else:
-                    max_value, max_pos = find_max_pos(dp, i - 1)
-                    dp[i][sv] = minus_limit + max_value
-                    dp_back[i][sv] = max_pos
+                    for s_pre2 in Status:
+                        sv_pre2 = s_pre2.value
+                        if sv_pre in 'BS' and sv_pre2 in 'BM':
+                            continue
+                        if sv_pre in 'ME' and sv_pre2 in 'ES':
+                            continue
+                        if dp[i - 1].get(sv_pre) is None:
+                            continue
+                        dp_value = get_probability(word_dictionary, sentence[i - 2] + ' ' + sv_pre2,
+                                                   sentence[i - 1] + ' ' + sv_pre,
+                                                   sentence[i] + ' ' + sv) + dp[i - 1][sv_pre2][sv_pre]
+                        if dp_value > dp_isv:
+                            dp_isv = dp_value
+                            dp_back[i][sv_pre][sv] = (sv_pre2, sv_pre)
+                    if dp_isv != -sys.maxsize:
+                        dp[i][sv_pre][sv] = dp_isv
+                    else:
+                        max_value, max_pos = find_max_pos(dp, i - 1)
+                        dp[i][sv_pre][sv] = minus_limit + max_value
+                        dp_back[i][sv_pre][sv] = max_pos
 
-    max_value = -sys.maxsize
-    max_pos = 'S'
-    for sv in dp[len(sentence) - 1].keys():
-        if sv in 'BM':
-            continue
-        if dp[len(sentence) - 1][sv] > max_value:
-            max_value = dp[len(sentence) - 1][sv]
-            max_pos = sv
     length = len(sentence)
+    max_value, max_pos = find_max_pos_2(dp, length - 1)
+    result = max_pos[0] + max_pos[1] + result
     for i in range(length):
-        result = max_pos + result
-        max_pos = dp_back[length - 1 - i][max_pos]
+        max_pos = dp_back[length - 1 - i][max_pos[0]][max_pos[1]]
+        result = max_pos[0] + result
     return result
 
 
@@ -173,6 +201,6 @@ def solve(sentence, func, word_dictionary):
 
 if __name__ == '__main__':
     word_dictionary = get_dict()
-    # calculate(cbgm, SolveFile, seg_CBGM)
-    sentence = '19980101-01-003-006今晚的长安街流光溢彩，火树银花；人民大会堂里灯火辉煌，充满欢乐祥和的喜庆气氛。在这场由中共北京市委宣传部、市政府办公厅等单位主办的题为“世纪携手、共奏华章”的新年音乐会上，中国三个著名交响乐团———中国交响乐团、上海交响乐团、北京交响乐团首次联袂演出。著名指挥家陈佐湟、陈燮阳、谭利华分别指挥演奏了一批中外名曲，京沪两地２００多位音乐家组成的大型乐队以饱满的激情和精湛的技艺为观众奉献了一台高水准的交响音乐会。'
+    # calculate(tri_cbgm, SolveFile, seg_CBGM)
+    sentence = '维'
     print(solve(sentence, tri_cbgm, word_dictionary))

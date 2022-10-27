@@ -1,11 +1,10 @@
 # coding=gbk
 import json
 import re
-from math import log
 import sys
 import time
 from replace_dict import replace_dict
-from CBGM.CBGM_config import *
+from config.CBGM_config import *
 
 
 def get_dict():
@@ -170,6 +169,6 @@ def solve(sentence, func, word_dictionary):
 
 if __name__ == '__main__':
     word_dictionary = get_dict()
-    calculate(cbgm, SolveFile, seg_CBGM)
+    # calculate(cbgm, SolveFile, seg_CBGM)
     sentence = '19980101-01-003-006今晚的长安街流光溢彩，火树银花；人民大会堂里灯火辉煌，充满欢乐祥和的喜庆气氛。在这场由中共北京市委宣传部、市政府办公厅等单位主办的题为“世纪携手、共奏华章”的新年音乐会上，中国三个著名交响乐团———中国交响乐团、上海交响乐团、北京交响乐团首次联袂演出。著名指挥家陈佐湟、陈燮阳、谭利华分别指挥演奏了一批中外名曲，京沪两地２００多位音乐家组成的大型乐队以饱满的激情和精湛的技艺为观众奉献了一台高水准的交响音乐会。'
     print(solve(sentence, cbgm, word_dictionary))

@@ -1,10 +1,11 @@
 # coding=gbk
-from CBGM.CBGM_config import seg_CBGM
-from TnT.TnT_config import seg_TnT
-from mix_model.mix_config import seg_mix
+import config.Tri_CBGM_config
+from config.CBGM_config import seg_CBGM
+from config.TnT_config import seg_TnT
+from config.mix_config import seg_mix
 from physicial_method.phy_config import seg_FMM, seg_BMM, TrainingDataFile, seg_BM
-from status_method.status_config import seg_Unigram, seg_Bigram
-from HMM.HMM_config import seg_HMM
+from config.status_config import seg_Unigram, seg_Bigram
+from config.HMM_config import seg_HMM
 import re
 
 
@@ -93,6 +94,7 @@ score6 = getTotalScore(TrainingDataFile[3:], seg_BM[3:])
 score7 = getTotalScore(TrainingDataFile[3:], seg_TnT[3:])
 score8 = getTotalScore(TrainingDataFile[3:], seg_CBGM[3:])
 score9 = getTotalScore(TrainingDataFile[3:], seg_mix[3:])
+score10 = getTotalScore(TrainingDataFile[3:], config.Tri_CBGM_config.seg_CBGM[3:])
 print("计算完成")
 print('FMM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score1[0], score1[1], score1[2]))
 print('BMM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score2[0], score2[1], score2[2]))
@@ -103,4 +105,5 @@ print('HMM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score5[0], score5[1
 print('TnT:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score7[0], score7[1], score7[2]))
 print('CBGM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score8[0], score8[1], score8[2]))
 print('Bigram+CBGM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score9[0], score9[1], score9[2]))
+print('Tri_CBGM:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score10[0], score10[1], score10[2]))
 

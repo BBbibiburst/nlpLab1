@@ -1,0 +1,10 @@
+TrainingDataFile = [r'../resources/199801_seg&pos.txt', r'../resources/199802.txt', r'../resources/199803.txt']
+# TrainingDataFile= [r'../resources/199801_seg&pos.txt']
+SolveFile = r'../resources/199801_sent.txt'
+Unigram_Dict = r'../results/unigram_dict.txt'
+seg_Unigram = r'../results/seg_Unigram.txt'
+Bigram_Dict = r'../results/bigram_dict.txt'
+seg_Bigram = r'../results/seg_Bigram.txt'
+include_seperated_words = False
+include_complex_words = False
+linear_interpolation = 0.9999

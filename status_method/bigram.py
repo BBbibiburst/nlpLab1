@@ -7,7 +7,7 @@ import time
 
 import TnT.TnT_OOV_discover
 from replace_dict import replace_dict
-from status_method.status_config import *
+from config.status_config import *
 import HMM.OOV_discover
 import HMM.NAME_discover
 
@@ -162,4 +162,6 @@ word_dictionary = get_dict()
 TnT_dict = TnT.TnT_OOV_discover.get_dict()
 HMM_Name_dict = HMM.NAME_discover.get_dict()
 if __name__ == '__main__':
-    calculate(bigram, SolveFile, seg_Bigram)
+    #calculate(bigram, SolveFile, seg_Bigram)
+    sentence = '¡£'
+    print(solve(sentence, bigram, word_dictionary))

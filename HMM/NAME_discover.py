@@ -3,7 +3,7 @@ import json
 import re
 import sys
 import time
-from HMM.HMM_config import *
+from config.HMM_config import *
 from replace_dict import replace_dict
 
 def get_dict():

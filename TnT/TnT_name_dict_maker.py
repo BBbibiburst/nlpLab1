@@ -1,8 +1,7 @@
 # coding=gbk
 import re
-import sys
 
-from TnT_config import *
+from config.TnT_config import *
 import json
 from math import log
 

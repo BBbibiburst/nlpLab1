@@ -1,8 +1,7 @@
 # coding=gbk
 import re
-import sys
 
-from HMM_config import *
+from config.HMM_config import *
 import json
 from math import log
 

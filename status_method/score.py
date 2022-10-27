@@ -1,6 +1,6 @@
 # coding=gbk
 from physicial_method.phy_config import TrainingDataFile
-from status_method.status_config import seg_Bigram
+from config.status_config import seg_Bigram
 import re
 
 

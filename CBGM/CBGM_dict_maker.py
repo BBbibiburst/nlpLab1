@@ -1,8 +1,7 @@
 # coding=gbk
 import re
-import sys
 
-from CBGM_config import *
+from config.CBGM_config import *
 import json
 from math import log
 

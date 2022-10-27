@@ -2,7 +2,7 @@
 import re
 
 from replace_dict import replace_dict
-from status_config import *
+from config.status_config import *
 import json
 
 

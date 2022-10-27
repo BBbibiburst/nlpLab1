@@ -3,7 +3,7 @@ import json
 import re
 import sys
 import time
-from HMM.HMM_config import *
+from config.HMM_config import *
 from replace_dict import replace_dict
 
 
@@ -112,5 +112,23 @@ def calculate(func, SolveFile, seg_gram):
     print('分词完成,用时{:.2f}s'.format((end - start)))
 
 
+def solve(sentence, func, word_dictionary):
+    if sentence == '':
+        return ''
+    replace_list = {i: [] for i in replace_dict.values()}
+    for key, value in replace_dict.items():
+        replace_list[value] = re.findall(key, sentence)
+        sentence = re.sub(key, value, sentence)
+        ##
+    word_list = func(sentence, word_dictionary)
+    sentence_cut = ''
+    for word in word_list:
+        sentence_cut = sentence_cut + word + '/  '
+    sentence_cut = replace_back(sentence_cut, replace_list)
+    return sentence_cut
+
+
 if __name__ == '__main__':
-    calculate(word_segment, SolveFile, seg_HMM)
+    # calculate(word_segment, SolveFile, seg_HMM)
+    sentence = '19980101-01-003-006今晚的长安街流光溢彩，火树银花；人民大会堂里灯火辉煌，充满欢乐祥和的喜庆气氛。在这场由中共北京市委宣传部、市政府办公厅等单位主办的题为“世纪携手、共奏华章”的新年音乐会上，中国三个著名交响乐团———中国交响乐团、上海交响乐团、北京交响乐团首次联袂演出。著名指挥家陈佐湟、陈燮阳、谭利华分别指挥演奏了一批中外名曲，京沪两地２００多位音乐家组成的大型乐队以饱满的激情和精湛的技艺为观众奉献了一台高水准的交响音乐会。'
+    print(solve(sentence, word_segment, get_dict()))

@@ -6,7 +6,7 @@ import time
 from replace_dict import replace_dict
 from status_method.Sentence_Network_Graph_Unigram import SentenceNetworkGraph_Unigram
 
-from status_config import *
+from config.status_config import *
 
 
 def get_dict():

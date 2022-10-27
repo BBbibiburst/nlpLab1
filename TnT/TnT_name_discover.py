@@ -3,7 +3,7 @@ import json
 import re
 import sys
 import time
-from TnT_config import *
+from config.TnT_config import *
 from replace_dict import replace_dict
 
 
