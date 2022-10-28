@@ -1,0 +1,11 @@
+SolveFile = r'../resources/199801_sent.txt'
+AnswerFile = [r'../resources/199801_seg&pos.txt', r'../resources/199802.txt', r'../resources/199803.txt']
+# seg_Tri_CBGM = [r'../post_process/seg_tri_cbgm1.txt', r'../post_process/seg_tri_cbgm2.txt', r'../post_process/seg_tri_cbgm3.txt']
+# seg_Bigram = [r'../post_process/seg_Bigram1.txt',r'../post_process/seg_Bigram2.txt',r'../post_process/seg_Bigram3.txt']
+# seg_mix = [r'../post_process/seg_mix1.txt',r'../post_process/seg_mix2.txt',r'../post_process/seg_mix3.txt']
+seg_Tri_CBGM = [r'../post_process/seg_tri_cbgm2.txt', r'../post_process/seg_tri_cbgm3.txt']
+seg_Bigram = [r'../post_process/seg_Bigram2.txt', r'../post_process/seg_Bigram3.txt']
+seg_mix = [r'../post_process/seg_mix2.txt', r'../post_process/seg_mix3.txt']
+Tri_CBGM_Rule_Dict = r'../results/Tri_CBGM_rule_dict.txt'
+Bigram_Rule_Dict = r'../results/Bigram_rule_dict.txt'
+Mix_Rule_Dict = r'../results/Mix_rule_dict.txt'

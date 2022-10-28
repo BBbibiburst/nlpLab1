@@ -85,7 +85,7 @@ def showscore():
     print("正在计算...")
     score = getTotalScore(TrainingDataFile, seg_Bigram)
     print("计算完成")
-    print('Bigram:\n精确率:{:.3f},召回率:{:.3f},F1值:{:.3f}'.format(score[0], score[1], score[2]))
+    print('Bigram:\n精确率:{:.4f},召回率:{:.4f},F1值:{:.4f}'.format(score[0], score[1], score[2]))
 
 def upper_get_score():
     return getTotalScore(TrainingDataFile, seg_Bigram)

@@ -8,3 +8,4 @@ seg_Bigram = r'../results/seg_Bigram.txt'
 include_seperated_words = False
 include_complex_words = False
 linear_interpolation = 0.9999
+minus_limit = -100000000

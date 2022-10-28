@@ -105,9 +105,44 @@ def make_dict(TrainingDataFile):
 for data in TrainingDataFile:
     make_dict(data)
 
+
+# Çó½â¦Ë
+lambda1 = lambda2 = 0
+N = sum([word_seg_dict[''][s] for s in word_seg_dict[''].keys()])
+for key1, sub_dict in word_seg_dict.items():
+    for key2, value in sub_dict.items():
+        f12 = word_seg_dict[key1][key2]
+        f1 = word_seg_dict[''].get(key1)
+        if f1 is None:
+            f1 = 0
+        f2 = word_seg_dict[''].get(key2)
+        if f2 is None:
+            f2 = 0
+        num1 = 0
+        num2 = 0
+        if f1 - 1 != 0:
+            num1 = (f12 - 1) / (f1 - 1)
+        if N - 1 != 0:
+            num2 = (f2 - 1) / (N - 1)
+        max_value = max(num1, num2)
+        if max_value == num1:
+            lambda2 += f12
+        else:
+            lambda1 += f12
+lambda_sum = lambda1 + lambda2
+lambda1 /= lambda_sum
+lambda2 /= lambda_sum
+print('lambda1 = ', lambda1)
+print('lambda2 = ', lambda2)
+word_seg_dict['lambda1'] = lambda1
+word_seg_dict['lambda2'] = lambda2
+
+
 word_seg_dict['']['__total_len__'] = 0
 word_seg_dict[''][''] = 0
 for key in word_seg_dict.keys():
+    if key in ['lambda1','lambda2']:
+        continue
     word_seg_dict[key]['__len__'] = 0
     for val in word_seg_dict[key].values():
         word_seg_dict[key]['__len__'] += val

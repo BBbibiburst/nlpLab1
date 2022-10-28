@@ -4,6 +4,9 @@ import re
 from math import log
 import sys
 import time
+
+from config.post_process_config import Tri_CBGM_Rule_Dict
+from post_process.post_process import post_process, get_rule_dict
 from replace_dict import replace_dict
 from config.Tri_CBGM_config import *
 
@@ -135,6 +138,7 @@ def tri_cbgm_viterbi(sentence, word_dictionary):
 def tri_cbgm(sentence, prob_dict):
     result = []
     status_list = tri_cbgm_viterbi(sentence, prob_dict)
+    status_list = post_process(sentence, status_list, TC_rule_dict)
     while True:
         if len(sentence) == 0:
             break
@@ -199,8 +203,7 @@ def solve(sentence, func, word_dictionary):
     return sentence_cut
 
 
+TC_rule_dict = get_rule_dict(Tri_CBGM_Rule_Dict)
 if __name__ == '__main__':
     word_dictionary = get_dict()
-    # calculate(tri_cbgm, SolveFile, seg_CBGM)
-    sentence = 'ά'
-    print(solve(sentence, tri_cbgm, word_dictionary))
+    calculate(tri_cbgm, SolveFile, seg_CBGM)

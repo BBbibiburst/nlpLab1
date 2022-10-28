@@ -6,6 +6,8 @@ import sys
 import time
 
 import TnT.TnT_OOV_discover
+from config.post_process_config import Bigram_Rule_Dict
+from post_process.post_process import post_process, get_rule_dict
 from replace_dict import replace_dict
 from config.status_config import *
 import HMM.OOV_discover
@@ -65,6 +67,7 @@ def add_into_dict(sentence_cut, word_dict, p):
 
 
 def bigram(sentence, word_dict, OOV_param=(11, 11)):
+    sentence_past = sentence
     add_into_dict([i for i in sentence], word_dict, OOV_param[0])
     add_into_dict(TnT.TnT_OOV_discover.word_segment(sentence, TnT_dict), word_dict, OOV_param[1])
     add_into_dict(HMM.NAME_discover.word_segment(sentence, HMM_Name_dict), word_dict, OOV_param[1])
@@ -108,7 +111,45 @@ def bigram(sentence, word_dict, OOV_param=(11, 11)):
         word = sentence[pos:]
         sentence = sentence[:pos]
         result.insert(0, word)
+    status_list = get_status_list(result)
+    status_list = post_process(sentence_past, status_list, rule_dict)
+    result = get_word_list_result(sentence_past, status_list)
     return result
+
+
+def get_word_list_result(sentence, status_list):
+    result = []
+    while True:
+        if len(sentence) == 0:
+            break
+        s = status_list.find('S')
+        e = status_list.find('E')
+        if s == -1:
+            s = e
+        if e == -1:
+            e = s
+        pos = min(s, e)
+        result.append(sentence[:pos + 1])
+        sentence = sentence[pos + 1:]
+        status_list = status_list[pos + 1:]
+    return result
+
+
+def get_status_list(word_list):
+    status_list = ''
+    for word in word_list:
+        word_len = len(word)
+        if word_len == 1:
+            status_list += 'S'
+        else:
+            for i in range(word_len):
+                if i == 0:
+                    status_list += 'B'
+                elif i == word_len - 1:
+                    status_list += 'E'
+                else:
+                    status_list += 'M'
+    return status_list
 
 
 def calculate(func, SolveFile, seg_gram, OOV_param=(14, 14)):
@@ -161,7 +202,7 @@ def solve(sentence, func, word_dictionary):
 word_dictionary = get_dict()
 TnT_dict = TnT.TnT_OOV_discover.get_dict()
 HMM_Name_dict = HMM.NAME_discover.get_dict()
+rule_dict = get_rule_dict(Bigram_Rule_Dict)
 if __name__ == '__main__':
-    #calculate(bigram, SolveFile, seg_Bigram)
-    sentence = '¡£'
-    print(solve(sentence, bigram, word_dictionary))
+    calculate(bigram, SolveFile, seg_Bigram)
+
