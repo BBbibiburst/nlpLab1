@@ -23,7 +23,6 @@ bigram_dict = mix_get_dict(bigram_dict_file)
 cbgm_dict = mix_get_dict(tri_cbgm_dict_file)
 
 
-
 def get_word_list_result(sentence, status_list):
     result = []
     while True:
@@ -59,18 +58,6 @@ def get_status_list(word_list):
     return status_list
 
 
-# 双向匹配
-def mix(sentence):
-    bigram_result = bigram(sentence, bigram_dict)
-    cbgm_result = tri_cbgm(sentence, cbgm_dict)
-    sng = SentenceNetworkGraph(sentence, [bigram_result, cbgm_result])
-    result = sng.solve()
-    status_list = get_status_list(result)
-    status_list = post_process(sentence, status_list, rule_dict)
-    result = get_word_list_result(sentence, status_list)
-    return result
-
-
 def solve(sentence):
     sentence = sentence.rstrip()
     if sentence == '':
@@ -89,7 +76,7 @@ def solve(sentence):
     return sentence_cut
 
 
-def calculate(func,SolveFile,seg_mix):
+def calculate(func, SolveFile, seg_mix):
     print("正在获取词典...")
     print("词典获取完成")
     print("开始分词")
@@ -122,7 +109,4 @@ def calculate(func,SolveFile,seg_mix):
 
 
 rule_dict = get_rule_dict(Mix_Rule_Dict)
-if __name__ == '__main__':
-    calculate(mix, SolveFile,seg_mix)
-
 

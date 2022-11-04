@@ -6,6 +6,7 @@ import sys
 import time
 
 import TnT.TnT_OOV_discover
+import Tri_CBGM.Tri_CBGM
 from config.post_process_config import Bigram_Rule_Dict
 from post_process.post_process import post_process, get_rule_dict
 from replace_dict import replace_dict
@@ -66,10 +67,14 @@ def add_into_dict(sentence_cut, word_dict, p):
         last_word = word
 
 
-def bigram(sentence, word_dict, OOV_param=(11, 11)):
+def bigram(sentence, word_dict, OOV_param=(11, 11), mode=0):
     sentence_past = sentence
+    # 未登录词识别
     add_into_dict([i for i in sentence], word_dict, OOV_param[0])
-    add_into_dict(TnT.TnT_OOV_discover.word_segment(sentence, TnT_dict), word_dict, OOV_param[1])
+    if mode == 0:
+        add_into_dict(TnT.TnT_OOV_discover.word_segment(sentence, TnT_dict), word_dict, OOV_param[1])
+    elif mode == 1:
+        add_into_dict(Tri_CBGM.Tri_CBGM.tri_cbgm(sentence, Tri_CBGM_dict), word_dict, OOV_param[1])
     add_into_dict(HMM.NAME_discover.word_segment(sentence, HMM_Name_dict), word_dict, OOV_param[1])
     # viterbi算法计算概率
     result = []
@@ -111,6 +116,7 @@ def bigram(sentence, word_dict, OOV_param=(11, 11)):
         word = sentence[pos:]
         sentence = sentence[:pos]
         result.insert(0, word)
+    # 分词后处理
     status_list = get_status_list(result)
     status_list = post_process(sentence_past, status_list, rule_dict)
     result = get_word_list_result(sentence_past, status_list)
@@ -199,10 +205,20 @@ def solve(sentence, func, word_dictionary):
     sentence_cut = replace_back(sentence_cut, replace_list)
     return sentence_cut
 
+
 word_dictionary = get_dict()
 TnT_dict = TnT.TnT_OOV_discover.get_dict()
 HMM_Name_dict = HMM.NAME_discover.get_dict()
 rule_dict = get_rule_dict(Bigram_Rule_Dict)
-if __name__ == '__main__':
-    calculate(bigram, SolveFile, seg_Bigram)
+Tri_CBGM_dict = Tri_CBGM.Tri_CBGM.get_dict()
 
+
+
+if __name__ == '__main__':
+    # 用法：
+    # calculate(分词方法, 待分词文件路径, 分词结果文件路径)
+    # 可以通过修改这个方法的参数，分词文件位置SolveFile（要写相对路径）调节要进行分词的文件，
+    # SolveFile默认为resources/199801_sent.txt，分词结果保存在seg_Bigram = "results/seg_LM.txt"中。
+    # eg. calculate(bigram, r'../resources/199801_sent.txt', seg_Bigram)
+    # 对相对路径在r'../resources/199801_sent.txt'的文件199801_sent.txt 进行分词，结果保存在results/seg_LM.txt中。
+    calculate(bigram, SolveFile, seg_Bigram)

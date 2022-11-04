@@ -85,25 +85,9 @@ def getTotalScore(AnswerName, ResultName):
 
 
 print("正在计算...")
-score1 = getTotalScore(TrainingDataFile[3:], seg_FMM[3:])
-score2 = getTotalScore(TrainingDataFile[3:], seg_BMM[3:])
-score3 = getTotalScore(TrainingDataFile[3:], seg_Unigram[3:])
-score4 = getTotalScore(TrainingDataFile[3:], seg_Bigram[3:])
-score5 = getTotalScore(TrainingDataFile[3:], seg_HMM[3:])
-score6 = getTotalScore(TrainingDataFile[3:], seg_BM[3:])
-score7 = getTotalScore(TrainingDataFile[3:], seg_TnT[3:])
-score8 = getTotalScore(TrainingDataFile[3:], seg_CBGM[3:])
-score9 = getTotalScore(TrainingDataFile[3:], seg_mix[3:])
-score10 = getTotalScore(TrainingDataFile[3:], config.Tri_CBGM_config.seg_CBGM[3:])
+
+score9 = getTotalScore(TrainingDataFile[3:], config.Tri_CBGM_config.seg_CBGM[3:])
+
 print("计算完成")
-print('FMM:\n精确率:{:.4f},召回率:{:.4f},F1值:{:.4f}'.format(score1[0], score1[1], score1[2]))
-print('BMM:\n精确率:{:.4f},召回率:{:.4f},F1值:{:.4f}'.format(score2[0], score2[1], score2[2]))
-print('BM:\n精确率:{:.4f},召回率:{:.4f},F1值:{:.4f}'.format(score6[0], score6[1], score6[2]))
-print('Unigram:\n精确率:{:.4f},召回率:{:.4f},F1值:{:.4f}'.format(score3[0], score3[1], score3[2]))
-print('Bigram:\n精确率:{:.4f},召回率:{:.4f},F1值:{:.4f}'.format(score4[0], score4[1], score4[2]))
-print('HMM:\n精确率:{:.4f},召回率:{:.4f},F1值:{:.4f}'.format(score5[0], score5[1], score5[2]))
-print('TnT:\n精确率:{:.4f},召回率:{:.4f},F1值:{:.4f}'.format(score7[0], score7[1], score7[2]))
-print('CBGM:\n精确率:{:.4f},召回率:{:.4f},F1值:{:.4f}'.format(score8[0], score8[1], score8[2]))
-print('Bigram+CBGM:\n精确率:{:.4f},召回率:{:.4f},F1值:{:.4f}'.format(score9[0], score9[1], score9[2]))
-print('Tri_CBGM:\n精确率:{:.4f},召回率:{:.4f},F1值:{:.4f}'.format(score10[0], score10[1], score10[2]))
+print('Mix:\n精确率:{:.4f},召回率:{:.4f},F1值:{:.4f}'.format(score9[0], score9[1], score9[2]))
 
