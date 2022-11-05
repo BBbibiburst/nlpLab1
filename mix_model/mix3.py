@@ -1,4 +1,9 @@
 # coding=gbk
+import sys
+import os
+curPath = os.path.abspath(os.path.dirname(__file__))
+rootPath = os.path.split(curPath)[0]
+sys.path.append(rootPath)
 from mix_model import *
 
 
@@ -21,4 +26,4 @@ if __name__ == '__main__':
     # SolveFile默认为resources/199801_sent.txt，分词结果保存在seg_mix = "seg_LM.txt"中，即本文件夹下。
     # eg. calculate(mix, r'../resources/199801_sent.txt', seg_mix)
     # 对相对路径在r'../resources/199801_sent.txt'的文件199801_sent.txt 进行分词，结果保存在本文件夹下的seg_LM.txt中。
-    calculate(mix, SolveFile, seg_mix)
+    calculate(mix, sys.argv[1], sys.argv[2])

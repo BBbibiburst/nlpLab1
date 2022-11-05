@@ -15,4 +15,5 @@ phy.py调用phy_utils.py中的类和方法将FMM和BMM结果输出。
 bigram.py文件的末尾有详细的使用说明。
 
 3.6 集成了未登录词识别的Bigram在3.5节status_method/bigram.py中，为了方便助教验收，将模型进行了集成。最终作为性能评分依据的三个模型分别为mix_model文件夹下的mix1.py，mix2.py，mix3
-.py，三个模型在各自的文件末尾有详细的操作说明。为防止与Bigram的seg_LM.txt混淆，特将这三个模型的分词结果默认保存在mix_model文件夹下，即mix_model/seg_LM.txt
+.py，可以通过命令行的方式运行模型。由于使用了相对路径，模型需要在mix_model文件夹下进行运行，请先cd到mix_model文件夹下。运行方式为python mix1.py 待分词文件的路径 分词结果的路径。例如python mix1.py in.txt out.txt。mix2.py和mix3.py同理。
+也可以直接在代码里修改相应参数进行分词，mix1.py，mix2.py，mix3 .py代码最底部都有详细的说明。

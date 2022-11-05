@@ -58,7 +58,7 @@ def get_status_list(word_list):
     return status_list
 
 
-def solve(sentence):
+def solve(sentence,func):
     sentence = sentence.rstrip()
     if sentence == '':
         return ''
@@ -68,7 +68,7 @@ def solve(sentence):
         replace_list[value] = re.findall(key, sentence)
         sentence = re.sub(key, value, sentence)
         ##
-    word_list = mix(sentence)
+    word_list = func(sentence)
     sentence_cut = ''
     for word in word_list:
         sentence_cut = sentence_cut + word + '/  '
